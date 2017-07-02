@@ -419,6 +419,8 @@ function geronimo() {
 				game.level = 1;
 				this.refreshLevel(".level");
 				game.gameOver = false;
+				amplitude.logEvent('Game.Started');
+
 			}
 			pacman.reset();
 
@@ -697,9 +699,8 @@ function geronimo() {
 
 		this.die = function () {
 			if (!this.dead) {
-				alert('killedGhost');
-				amplitude.getInstance().logEvent('Killed.Ghost');
-
+				//alert('killedGhost');
+				amplitude.getInstance().logEvent('Killed.Ghost',{ 'name': name });
 				game.score.add(100);
 				//this.reset();
 				this.dead = true;
@@ -1121,7 +1122,7 @@ function geronimo() {
 		this.setDirection = function (dir) {
 			if (!this.frozen) {
 				//alert('turned ' + dir.name);
-				amplitude.logEvent('Changed.Direction', {'direction': dir.name});
+				amplitude.logEvent('Changed.Direction', { 'direction': dir.name });
 				this.dirX = dir.dirX;
 				this.dirY = dir.dirY;
 				this.angle1 = dir.angle1;
@@ -1227,13 +1228,13 @@ function geronimo() {
 			this.lives--;
 			console.log("pacman died, " + this.lives + " lives left");
 			//alert('died');
-			amplitude.getInstance().logEvent('died');
+			amplitude.getInstance().logEvent('Died');
 			if (this.lives <= 0) {
 				var input = "<div id='highscore-form'><span id='form-validater'></span><input type='text' id='playerName'/><span class='button' id='score-submit'>save</span></div>";
 				game.showMessage("Game over", "Total Score: " + game.score.score + input);
 				game.gameOver = true;
 				//alert('gameOver');
-				amplitude.getInstance().logEvent('Game Over', {'score': game.score.score});
+				amplitude.getInstance().logEvent('Game Over', { 'score': game.score.score });
 				$('#playerName').focus();
 			}
 			game.drawHearts(this.lives);
