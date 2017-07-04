@@ -42,6 +42,9 @@ function geronimo() {
 
 	amplitude.getInstance().init("7ce925d7704fbb2104606431cacf209a");
 
+	var Airtable = require('airtable');
+	var base = new Airtable({ apiKey: 'keymW1ZElKs4tF7ib' }).base('appCppypdYKJeG9QI');
+
 	/* ----- Global Variables ---------------------------------------- */
 	var canvas;
 	var joystick;
@@ -52,48 +55,38 @@ function geronimo() {
 
 	var mapConfig = "data/map.json";
 
+	//var base = new Airtable({ apiKey: 'keymW1ZElKs4tF7ib' }).base('appCppypdYKJeG9QI');
 
 	/* AJAX stuff */
 	function getHighscore() {
 		setTimeout(ajax_get, 30);
 	}
 	function ajax_get() {
-		var date = new Date().getTime();
-		$.ajax({
-			datatype: "json",
-			type: "GET",
-			url: "data/db-handler.php",
-			data: {
-				timestamp: date,
-				action: "get"
-			},
-			success: function (msg) {
-				$("#highscore-list").text("");
-				for (var i = 0; i < msg.length; i++) {
-					$("#highscore-list").append("<li>" + msg[i]['name'] + "<span id='score'>" + msg[i]['score'] + "</span></li>");
-				}
-			}
+		$("#highscore-list").text("");
+
+		base('Scores').select({
+			sort: [
+				{ field: 'score', direction: 'desc' }
+			],
+			maxRecords: 10
+		}).eachPage(function page(records, fetchNextPage) {
+			records.forEach(function (record) {
+				$("#highscore-list").append("<li>" + record.get('name') + "<span id='score'>" + record.get('score') + "</span></li>");
+			});
+			fetchNextPage();
+		}, function done(error) {
+			console.log(error);
 		});
 	}
-	function ajax_add(n, s, l) {
 
-		$.ajax({
-			type: 'POST',
-			url: 'data/db-handler.php',
-			data: {
-				action: 'add',
-				name: n,
-				score: s,
-				level: l
-			},
-			dataType: 'json',
-			success: function (data) {
-				console.log('Highscore added: ' + data);
-				$('#highscore-form').html('<span class="button" id="show-highscore">View Highscore List</span>');
-			},
-			error: function (errorThrown) {
-				console.log(errorThrown);
-			}
+	function ajax_add(n, s, l) {
+		base('Scores').create({
+			'name': n,
+			'score': s
+		}, function (err, record) {
+			if (err) { console.log(err); return; }
+			console.log('Highscore added: ' + data);
+			$('#highscore-form').html('<span class="button" id="show-highscore">View Highscore List</span>');
 		});
 	}
 
@@ -700,7 +693,7 @@ function geronimo() {
 		this.die = function () {
 			if (!this.dead) {
 				//alert('killedGhost');
-				amplitude.getInstance().logEvent('Killed.Ghost',{ 'name': name });
+				amplitude.getInstance().logEvent('Killed.Ghost', { 'name': name });
 				game.score.add(100);
 				//this.reset();
 				this.dead = true;
@@ -1228,7 +1221,7 @@ function geronimo() {
 			this.lives--;
 			console.log("pacman died, " + this.lives + " lives left");
 			//alert('died');
-			amplitude.getInstance().logEvent('Died');
+			amplitude.getInstance().logEvent('Died', { 'livesLeft': this.lives });
 			if (this.lives <= 0) {
 				var input = "<div id='highscore-form'><span id='form-validater'></span><input type='text' id='playerName'/><span class='button' id='score-submit'>save</span></div>";
 				game.showMessage("Game over", "Total Score: " + game.score.score + input);

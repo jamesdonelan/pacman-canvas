@@ -1,0 +1,17 @@
+DropBox location - just copy files to DropBox to make it accessible by everyone
+https://dl.dropboxusercontent.com/u/36199491/pacman-canvas/index.htm
+http://bit.ly/2tBPtlb
+
+GET scores
+curl https://api.airtable.com/v0/appCppypdYKJeG9QI/Scores -H "Authorization: Bearer keymW1ZElKs4tF7ib"
+
+ADD score
+curl -v -XPOST https://api.airtable.com/v0/appCppypdYKJeG9QI/Scores \
+-H "Authorization: Bearer keymW1ZElKs4tF7ib" \
+-H "Content-type: application/json" \
+ -d '{
+  "fields": {
+    "name": "Andy",
+    "score": "623"
+  }
+}'
