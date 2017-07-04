@@ -59,11 +59,7 @@ function geronimo() {
 
 	/* AJAX stuff */
 	function getHighscore() {
-		setTimeout(ajax_get, 30);
-	}
-	function ajax_get() {
 		$("#highscore-list").text("");
-
 		base('Scores').select({
 			sort: [
 				{ field: 'score', direction: 'desc' }
@@ -79,21 +75,21 @@ function geronimo() {
 		});
 	}
 
-	function ajax_add(n, s, l) {
-		base('Scores').create({
-			'name': n,
-			'score': s
-		}, function (err, record) {
-			if (err) { console.log(err); return; }
-			console.log('Highscore added: ' + data);
-			$('#highscore-form').html('<span class="button" id="show-highscore">View Highscore List</span>');
-		});
-	}
-
 	function addHighscore() {
 		var name = $("input[type=text]").val();
 		$("#highscore-form").html("Saving highscore...");
-		ajax_add(name, game.score.score, game.level);
+		base('Scores').create({
+			'name': name,
+			'score': game.score.score,
+			'level': game.level
+		}, function (err, record) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			console.log('Highscore added');
+			$('#highscore-form').html('<span class="button" id="show-highscore">View Highscore List</span>');
+		});
 	}
 
 	function buildWall(context, gridX, gridY, width, height) {
@@ -262,7 +258,6 @@ function geronimo() {
 		this.toggleSound = function () {
 			this.soundfx === 0 ? this.soundfx = 1 : this.soundfx = 0;
 			$('#mute').toggle();
-			//alert("toggledSound");
 			amplitude.getInstance().logEvent('Toggled.Sound');
 		};
 
@@ -270,20 +265,15 @@ function geronimo() {
 		};
 
 		this.newGame = function () {
-			var r = confirm("Are you sure you want to restart?");
-			if (r) {
-				console.log("new Game");
-				//alert("newGame");
-				amplitude.getInstance().logEvent('New.Game');
-				this.init(0);
-				this.pauseResume();
-			}
+			console.log("new Game");
+			amplitude.getInstance().logEvent('New.Game');
+			this.init(0);
+			this.pauseResume();
 		};
 
 		this.nextLevel = function () {
 			this.level++;
 			console.log("Level " + game.level);
-			//alert("nextLevel");
 			amplitude.getInstance().logEvent('Next.Level');
 			game.showMessage("Level " + game.level, this.getLevelTitle() + "<br/>(Click to continue!)");
 			game.refreshLevel(".level");
@@ -692,7 +682,6 @@ function geronimo() {
 
 		this.die = function () {
 			if (!this.dead) {
-				//alert('killedGhost');
 				amplitude.getInstance().logEvent('Killed.Ghost', { 'name': name });
 				game.score.add(100);
 				//this.reset();
@@ -1041,7 +1030,6 @@ function geronimo() {
 					) {
 						var s;
 						if (field === "powerpill") {
-							//alert('ate powerPill');
 							amplitude.getInstance().logEvent('Ate.PowerPill');
 							Sound.play("powerpill");
 							s = 50;
@@ -1049,7 +1037,6 @@ function geronimo() {
 							game.startGhostFrightened();
 						}
 						else {
-							//alert('ate pill');
 							amplitude.getInstance().logEvent('Ate.Pill');
 							Sound.play("waka");
 							s = 10;
@@ -1114,7 +1101,6 @@ function geronimo() {
 		}
 		this.setDirection = function (dir) {
 			if (!this.frozen) {
-				//alert('turned ' + dir.name);
 				amplitude.logEvent('Changed.Direction', { 'direction': dir.name });
 				this.dirX = dir.dirX;
 				this.dirY = dir.dirY;
@@ -1127,7 +1113,6 @@ function geronimo() {
 			this.beastMode = true;
 			this.beastModeTimer = 240;
 			//console.log("Beast Mode activated!");
-			//alert('enabledBeastMode');
 			amplitude.getInstance().logEvent('Enabled.Beast.Mode');
 			inky.dazzle();
 			pinky.dazzle();
@@ -1137,7 +1122,6 @@ function geronimo() {
 		this.disableBeastMode = function () {
 			this.beastMode = false;
 			//console.log("Beast Mode is over!");
-			//alert('disabledBeastMode');
 			amplitude.getInstance().logEvent('Disabled.Beast.Mode');
 			inky.undazzle();
 			pinky.undazzle();
@@ -1220,13 +1204,11 @@ function geronimo() {
 			clyde.reset();
 			this.lives--;
 			console.log("pacman died, " + this.lives + " lives left");
-			//alert('died');
 			amplitude.getInstance().logEvent('Died', { 'livesLeft': this.lives });
 			if (this.lives <= 0) {
 				var input = "<div id='highscore-form'><span id='form-validater'></span><input type='text' id='playerName'/><span class='button' id='score-submit'>save</span></div>";
 				game.showMessage("Game over", "Total Score: " + game.score.score + input);
 				game.gameOver = true;
-				//alert('gameOver');
 				amplitude.getInstance().logEvent('Game Over', { 'score': game.score.score });
 				$('#playerName').focus();
 			}
@@ -1428,7 +1410,7 @@ function geronimo() {
 		-------------------------------------------------------------------------- */
 
 		game.init(0);
-		logger.disableLogger();
+		//logger.disableLogger();
 
 		renderContent();
 	});
