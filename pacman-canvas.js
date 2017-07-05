@@ -64,7 +64,7 @@ function geronimo() {
 			sort: [
 				{ field: 'score', direction: 'desc' }
 			],
-			maxRecords: 10
+			maxRecords: 20
 		}).eachPage(function page(records, fetchNextPage) {
 			records.forEach(function (record) {
 				$("#highscore-list").append("<li>" + record.get('name') + "<span id='score'>" + record.get('score') + "</span></li>");
@@ -88,7 +88,7 @@ function geronimo() {
 				return;
 			}
 			console.log('Highscore added');
-			$('#highscore-form').html('<span class="button" id="show-highscore">View Highscore List</span>');
+			$('#highscore-form').html('<span class="button" id="show-highscore">View Leaderboard</span>');
 		});
 	}
 
