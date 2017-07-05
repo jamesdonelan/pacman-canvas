@@ -4,14 +4,3 @@ http://bit.ly/2tBPtlb
 
 GET scores
 curl https://api.airtable.com/v0/appCppypdYKJeG9QI/Scores -H "Authorization: Bearer keymW1ZElKs4tF7ib"
-
-ADD score
-curl -v -XPOST https://api.airtable.com/v0/appCppypdYKJeG9QI/Scores \
--H "Authorization: Bearer keymW1ZElKs4tF7ib" \
--H "Content-type: application/json" \
- -d '{
-  "fields": {
-    "name": "Andy",
-    "score": "623"
-  }
-}'

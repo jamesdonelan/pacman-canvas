@@ -193,7 +193,7 @@ function geronimo() {
 
 		/* Game Functions */
 		this.startGhostFrightened = function () {
-			console.log("ghost frigthened");
+			console.log("ghost frightened");
 			this.ghostFrightened = true;
 			this.ghostFrightenedTimer = 240;
 			inky.dazzle();
@@ -1457,6 +1457,12 @@ function geronimo() {
 
 			// Pac Man
 			context.beginPath();
+
+			//testing using an image
+			var image = new Image();
+			image.src = "img/amplitude_logo.svg";
+			//context.drawImage(image, pacman.posX, pacman.posY, 2 * pacman.radius, 2 * pacman.radius);
+
 			context.fillStyle = "Yellow";
 			context.strokeStyle = "Yellow";
 			context.arc(pacman.posX + pacman.radius, pacman.posY + pacman.radius, pacman.radius, pacman.angle1 * Math.PI, pacman.angle2 * Math.PI);
@@ -1506,8 +1512,6 @@ function geronimo() {
 			pacman.checkDirectionChange();
 			pacman.checkCollisions();		// has to be the LAST method called on pacman
 
-
-
 			blinky.move();
 			inky.move();
 			pinky.move();
@@ -1519,10 +1523,8 @@ function geronimo() {
 		// All dots collected?
 		game.check();
 
-
 		//requestAnimationFrame(animationLoop);
 		setTimeout(animationLoop, game.refreshRate);
-
 
 	}
 
